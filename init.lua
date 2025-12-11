@@ -176,6 +176,24 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- fugitive keymaps
+vim.keymap.set('n', '<Leader>gv', ':Git blame<CR>', { desc = 'Show repository commit blame' })
+vim.keymap.set('n', '<Leader>gb', ':Gitsigns blame<CR>', { desc = 'Show repository commit blame' })
+vim.keymap.set('n', '<Leader>gi', ':Git<CR>', { desc = 'Show repository commit blame' })
+
+-- Exit normal node
+vim.keymap.set('i', 'jj', '<Esc>')
+
+vim.keymap.set('n', '<Leader>1', '1gt', { desc = 'Go to tab 1' })
+vim.keymap.set('n', '<Leader>2', '2gt', { desc = 'Go to tab 2' })
+vim.keymap.set('n', '<Leader>3', '3gt', { desc = 'Go to tab 3' })
+vim.keymap.set('n', '<Leader>4', '4gt', { desc = 'Go to tab 4' })
+vim.keymap.set('n', '<Leader>5', '5gt', { desc = 'Go to tab 5' })
+vim.keymap.set('n', '<Leader>6', '6gt', { desc = 'Go to tab 6' })
+
+-- Nvim tree
+vim.keymap.set('n', ',f', '<cmd>NvimTreeFindFile<CR>', { desc = 'Find file in explorer' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -185,10 +203,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -200,10 +218,30 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
+vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
+vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
+vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
+
+-- [[ Rspec commands ]]
+
+vim.keymap.set(
+  'n',
+  '<leader>cs',
+  ":exe system('tmux split -h \"bin/rspec ' . expand('%') . ':' . line('.') . ' --format documentation; read\"')<CR>",
+  { desc = 'Run spec in line' }
+)
+
+-- Rspec normal functions
+vim.keymap.set(
+  'n',
+  '<leader>ct',
+  ":exe system('tmux split -h \"bin/rspec ' . expand('%') . ' --format documentation; read\"')<CR>",
+  { desc = 'Run whole spec file' }
+)
+
+-- Git maps
+vim.keymap.set('n', '<Leader>gb', ':Git blame<CR>', { desc = 'Show repository commit blame' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -683,6 +721,12 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        ruby_lsp = {
+          init_options = {
+            linters = { 'rubocop' },
+            formatter = 'rubocop',
+          },
+        },
 
         lua_ls = {
           -- cmd = { ... },
@@ -761,13 +805,15 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 10000,
             lsp_format = 'fallback',
           }
         end
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        ruby = { 'rubocop' },
+        javascript = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -963,6 +1009,25 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
+  -- Tmux navigator
+  {
+    'christoomey/vim-tmux-navigator',
+    cmd = {
+      'TmuxNavigateLeft',
+      'TmuxNavigateDown',
+      'TmuxNavigateUp',
+      'TmuxNavigateRight',
+      'TmuxNavigatePrevious',
+    },
+    keys = {
+      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+    },
+  },
+  { 'tpope/vim-fugitive', {} },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -984,7 +1049,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
