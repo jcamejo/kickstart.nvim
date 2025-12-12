@@ -180,6 +180,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<Leader>gv', ':Git blame<CR>', { desc = 'Show repository commit blame' })
 vim.keymap.set('n', '<Leader>gb', ':Gitsigns blame<CR>', { desc = 'Show repository commit blame' })
 vim.keymap.set('n', '<Leader>gi', ':Git<CR>', { desc = 'Show repository commit blame' })
+vim.keymap.set('n', '<Leader>gp', ':Git push origin HEAD<CR>', { desc = 'Push to the current branch' })
 
 -- Exit normal node
 vim.keymap.set('i', 'jj', '<Esc>')
@@ -1028,6 +1029,7 @@ require('lazy').setup({
     },
   },
   { 'tpope/vim-fugitive', {} },
+  { 'github/copilot.vim', {} },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
