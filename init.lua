@@ -173,6 +173,9 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Oil config
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -223,6 +226,14 @@ vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
 vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
 vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
+
+-- [[ Copilot keymaps ]]
+
+vim.keymap.set('i', '<C-i>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = true,
+})
+vim.g.copilot_no_tab_map = true
 
 -- [[ Rspec commands ]]
 
@@ -286,7 +297,14 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  {
+    'Darazaki/indent-o-matic', -- Detect tabstop and shiftwidth automatically
+    opts = {
+      max_lines = 2048,
+      standard_widths = { 2, 4, 8 },
+      skip_multiline = true,
+    },
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -743,6 +761,12 @@ require('lazy').setup({
             },
           },
         },
+        ts_ls = {
+          init_options = {
+            linters = 'prettier',
+            formatter = 'prettier',
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -815,6 +839,9 @@ require('lazy').setup({
         lua = { 'stylua' },
         ruby = { 'rubocop' },
         javascript = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        javascriptreact = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -1029,7 +1056,26 @@ require('lazy').setup({
     },
   },
   { 'tpope/vim-fugitive', {} },
+  { 'tpope/vim-rhubarb', {} },
   { 'github/copilot.vim', {} },
+  { 'CopilotC-Nvim/CopilotChat.nvim', dependencies = { 'nvim-lua/plenary.nvim', branch = 'master' }, build = 'make tiktoken', opts = {} },
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      view_options = {
+        show_hidden = true,
+      },
+      keymaps = {
+        ['<C-v>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open in vertical split' },
+        ['<C-t>'] = { 'actions.select', opts = { tab = true }, desc = 'Open in new tab' },
+      },
+    },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    lazy = false,
+  },
+  {
+    'tpope/vim-rails',
+  }
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
