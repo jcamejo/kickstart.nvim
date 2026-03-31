@@ -141,6 +141,9 @@ vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
 
+-- Set relative number
+vim.opt.relativenumber = true
+
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
@@ -169,6 +172,9 @@ vim.o.confirm = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- Set quick save keymap
+vim.keymap.set('n', '<Leader>w', '<cmd>w<CR>', { desc = 'Save current buffer' })
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -185,6 +191,8 @@ vim.keymap.set('n', '<Leader>gb', ':Gitsigns blame<CR>', { desc = 'Show reposito
 vim.keymap.set('n', '<Leader>gi', ':Git<CR>', { desc = 'Show repository commit blame' })
 vim.keymap.set('n', '<Leader>gp', ':Git push origin HEAD<CR>', { desc = 'Push to the current branch' })
 
+vim.keymap.set('n', '<Leader>nh', '<cmd>nohlsearch<CR>', { desc = '' })
+
 -- Exit normal node
 vim.keymap.set('i', 'jj', '<Esc>')
 
@@ -195,6 +203,14 @@ vim.keymap.set('n', '<Leader>4', '4gt', { desc = 'Go to tab 4' })
 vim.keymap.set('n', '<Leader>5', '5gt', { desc = 'Go to tab 5' })
 vim.keymap.set('n', '<Leader>6', '6gt', { desc = 'Go to tab 6' })
 
+-- Copy paths to clipboard
+vim.keymap.set('n', '<leader>pa', '<cmd>let @+ = expand("%:p")<CR>', { desc = 'Copy [P]ath [A]bsolute' })
+vim.keymap.set('n', '<leader>pr', '<cmd>let @+ = expand("%:.")<CR>', { desc = 'Copy [P]ath [R]elative' })
+
+-- Github
+-- Copy the GBrowse URL to clipboard instead of opening
+vim.keymap.set({ 'n', 'v' }, '<leader>gy', ':GBrowse!<CR><CR>', { silent = true, desc = 'Copy Git URL' })
+
 -- Nvim tree
 vim.keymap.set('n', ',f', '<cmd>NvimTreeFindFile<CR>', { desc = 'Find file in explorer' })
 
@@ -204,7 +220,16 @@ vim.keymap.set('n', ',f', '<cmd>NvimTreeFindFile<CR>', { desc = 'Find file in ex
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', 'jj', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })
+vim.keymap.set('n', '<Leader>tt', '<cmd>tabedit | terminal<CR>', { desc = 'Open terminal in new tab' })
+vim.keymap.set('n', '<Leader>tv', '<cmd>vsp | terminal<CR>', { desc = 'Open terminal in vertical split' })
+
+-- Move from terminal to other splits directly
+vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]])
+vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]])
+vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]])
+vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]])
 
 -- TIP: Disable arrow keys in normal mode
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -240,7 +265,7 @@ vim.g.copilot_no_tab_map = true
 vim.keymap.set(
   'n',
   '<leader>cs',
-  ":exe system('tmux split -h \"bin/rspec ' . expand('%') . ':' . line('.') . ' --format documentation; read\"')<CR>",
+  ":exe system('tmux split -h \"bundle exec rspec ' . expand('%') . ':' . line('.') . ' --format documentation; read\"')<CR>",
   { desc = 'Run spec in line' }
 )
 
@@ -248,12 +273,20 @@ vim.keymap.set(
 vim.keymap.set(
   'n',
   '<leader>ct',
-  ":exe system('tmux split -h \"bin/rspec ' . expand('%') . ' --format documentation; read\"')<CR>",
+  ":exe system('tmux split -h \"bundle exec rspec ' . expand('%') . ' --format documentation; read\"')<CR>",
   { desc = 'Run whole spec file' }
 )
 
--- Git maps
-vim.keymap.set('n', '<Leader>gb', ':Git blame<CR>', { desc = 'Show repository commit blame' })
+-- [[ Yarn commands ]]
+
+vim.keymap.set(
+  'n',
+  '<leader>ys',
+  ":exe system('tmux split -h \"bin/yarn test_auto ' . expand('%') . ':' . line('.') . '; read\"')<CR>",
+  { desc = 'Run yarn test auto' }
+)
+
+vim.keymap.set('n', '<leader>yt', ":exe system('tmux split -h \"bin/yarn test ' . expand('%') . '; read\"')<CR>", { desc = 'Run whole yarn test file' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -470,6 +503,14 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+        defaults = {
+          mappings = {
+            i = {
+              ['<C-o>'] = 'cycle_history_next',
+              ['<C-i>'] = 'cycle_history_prev',
+            },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -745,6 +786,7 @@ require('lazy').setup({
             linters = { 'rubocop' },
             formatter = 'rubocop',
           },
+          cmd = { 'bundle', 'exec', 'ruby-lsp' },
         },
 
         lua_ls = {
@@ -1075,7 +1117,7 @@ require('lazy').setup({
   },
   {
     'tpope/vim-rails',
-  }
+  },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
