@@ -1,26 +1,22 @@
-local function gh(repo)
-  return 'https://github.com/' .. repo
-end
+local gh = 'https://github.com/'
 
--- Tmux pane navigation
-vim.pack.add { gh 'christoomey/vim-tmux-navigator' }
+local plugins = {
+  -- Tmux pane navigation
+  gh .. 'christoomey/vim-tmux-navigator',
 
--- Git integration
-vim.pack.add { gh 'tpope/vim-fugitive' }
-vim.pack.add { gh 'tpope/vim-rhubarb' }
+  -- Git integration
+  gh .. 'tpope/vim-fugitive',
+  gh .. 'tpope/vim-rhubarb',
 
--- GitHub Copilot
-vim.pack.add { gh 'github/copilot.vim' }
-vim.pack.add {
-  {
-    src = gh 'CopilotC-Nvim/CopilotChat.nvim',
-    depends = { gh 'nvim-lua/plenary.nvim' },
-  },
+  -- File explorer
+  gh .. 'stevearc/oil.nvim',
+
+  -- Rails support
+  gh .. 'tpope/vim-rails',
 }
-require('CopilotChat').setup {}
 
--- File explorer
-vim.pack.add { gh 'stevearc/oil.nvim' }
+vim.pack.add(plugins)
+
 require('oil').setup {
   view_options = {
     show_hidden = true,
@@ -31,5 +27,4 @@ require('oil').setup {
   },
 }
 
--- Rails support
-vim.pack.add { gh 'tpope/vim-rails' }
+return plugins

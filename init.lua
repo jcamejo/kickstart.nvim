@@ -239,14 +239,6 @@ do
   vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
   vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
-  -- [[ Copilot keymaps ]]
-
-  vim.keymap.set('i', '<C-i>', 'copilot#Accept("\\<CR>")', {
-    expr = true,
-    replace_keycodes = true,
-  })
-  vim.g.copilot_no_tab_map = true
-
   -- [[ Rspec commands ]]
 
   vim.keymap.set(
@@ -774,20 +766,9 @@ do
 
     stylua = {}, -- Used to format Lua code
 
-    ruby_lsp = {
-      init_options = {
-        linters = { 'rubocop' },
-        formatter = 'rubocop',
-      },
-      cmd = { 'bundle', 'exec', 'ruby-lsp' },
-    },
+    ruby_lsp = {},
 
-    ts_ls = {
-      init_options = {
-        linters = 'prettier',
-        formatter = 'prettier',
-      },
-    },
+    ts_ls = {},
 
     -- Special Lua Config, as recommended by neovim help docs
     lua_ls = {
